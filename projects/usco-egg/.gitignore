@@ -1,3 +1,4 @@
 *.zip
 egg_panel_1
 *.tif
+__pycache__
