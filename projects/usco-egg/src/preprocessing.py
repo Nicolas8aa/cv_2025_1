@@ -11,7 +11,6 @@ dirname =  os.path.dirname(__file__)
 data_dir = os.path.join(dirname, '../data')
 
 
-import cv2
 
 def apply_clahe_lab(image):
     """Applies CLAHE on the L-channel of the LAB color space to normalize brightness."""
