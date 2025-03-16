@@ -25,3 +25,7 @@ def display_image(image):
     plt.imshow(image, cmap='gray')
     plt.axis('off')
     plt.show()
+
+
+
+
