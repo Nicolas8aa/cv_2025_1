@@ -37,14 +37,15 @@ def main_hsv():
   #                    b_range=[115,160], suffix="adjusted")
 
 
-
-  # Define LAB color bounds for segmentation
+  # Define HSV color bounds for segmentation
 
   bounds_list = [
-    ([8, 115, 103], [18, 170, 221])
-    # ([81, 135, 145], [184, 150, 174]),  # Light Brown Eggs
-    # ([130, 140, 100], [255, 160, 120]),  # White Eggs
-    # ([110, 115, 90], [255, 135, 110])    # Dark Brown Eggs
+    ([8, 115, 103], [18, 170, 221]), # Normal eggs
+    ([8, 86, 129], [14, 161, 218]),  # Normal eggs +
+    ([19, 58, 130], [25, 108, 195]), # Light Green Eggs +
+    
+    # ([18, 57, 122], [26, 110, 195]), # Light Green Eggs
+    # ([9, 40, 59], [19, 138, 166]), # Basket
 ]
 
   # Apply segmentation
@@ -108,5 +109,5 @@ def main_lab():
 
 
 
-# main_hsv()
-main_lab()
+main_hsv()
+# main_lab()
