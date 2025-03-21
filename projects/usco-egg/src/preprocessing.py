@@ -28,6 +28,52 @@ def apply_clahe_lab(image):
     return img_corrected
 
 
+def normalize_egg_color_hsv(image):
+    """
+    Normalize egg colors in HSV space by adjusting the V channel.
+      :param image: Input RGB image.
+      :return: Color-normalized image in RGB.
+    """
+
+    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+    H, S, V = cv2.split(hsv)
+
+    # Apply CLAHE to correct brightness inconsistencies
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    V_clahe = clahe.apply(V)
+
+    # Merge the adjusted channels
+    hsv_corrected = cv2.merge((H, S, V_clahe))
+
+
+    return image
+
+    return cv2.cvtColor(hsv_corrected, cv2.COLOR_HSV2RGB)
+
+
+
+def normalize_egg_color_lab(image):
+    """
+    Applies a normalization to correct lighting variations in the image.
+      :param image: Input RGB image.
+      :return: Color-normalized image in RGB.
+    """
+    lab = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
+    L, A, B = cv2.split(lab)
+
+    # Normalize L-channel
+    L = cv2.normalize(L, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
+
+    # A = cv2.normalize(A, None, 128, 128, cv2.NORM_MINMAX)
+    # B = cv2.normalize(B, None, 128, 128, cv2.NORM_MINMAX)
+
+    # Merge and convert back
+    lab_corrected = cv2.merge((L, A, B))
+    img_corrected = cv2.cvtColor(lab_corrected, cv2.COLOR_LAB2RGB)
+
+    return img_corrected
+
+
 
 
 def analyze_image(image):
@@ -54,45 +100,34 @@ def show_histograms(image_data):
     plt.show()
     
 
+def get_adaptive_thresholds(image, base_lower, base_upper, scale=1.5):
+    """
+    Adjusts HSV bounds dynamically based on lighting conditions.
+    
+    :param image: Input RGB image.
+    :param base_lower: Manually picked lower HSV bound.
+    :param base_upper: Manually picked upper HSV bound.
+    :param scale: Factor for standard deviation adjustment.
+    :return: Adaptive lower and upper HSV bounds.
+    """
+    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+    H, S, V = cv2.split(hsv)
 
+    # Compute mean and std deviation of the H & S channels
+    mean_H, std_H = np.mean(H), np.std(H)
+    mean_S, std_S = np.mean(S), np.std(S)
 
-# Define main function
-def main():
-    raw_dir = os.path.join(data_dir, 'raw')
-    images = os.listdir(raw_dir)
+    # Adjust base bounds using standard deviation
+    adaptive_lower = np.array([
+        max(0, base_lower[0] - scale * std_H), 
+        max(0, base_lower[1] - scale * std_S), 
+        base_lower[2]
+    ], dtype=np.uint8)
 
+    adaptive_upper = np.array([
+        min(180, base_upper[0] + scale * std_H), 
+        min(255, base_upper[1] + scale * std_S), 
+        base_upper[2]
+    ], dtype=np.uint8)
 
-    # Load images and analyze properties
-    # image_data = {}
-    # for path in images:
-    #     if not path.endswith('.tif'):
-    #         continue
-    #     # Read image
-    #     image = cv2.imread(os.path.join(raw_dir,path), cv2.IMREAD_UNCHANGED)  
-        
-    #     # Analyze image
-    #     image_data[path] = analyze_image(image)
-
-    # # Show histograms
-    # show_histograms(image_data)
-    # return
-
-    for image_filename in images:
-        
-        # Filter only .tif files
-        if not image_filename.endswith('.tif'):
-            # print('skipping', image)
-            continue
-        
-        # Read the image
-        image = read_image(f'raw/{image_filename}')
-        
-        # I need to preprocess the image
-        preprocessed_image = apply_clahe_lab(image)
-        
-        # I need to save the preprocessed image
-        save_image(preprocessed_image, f'preprocessed/{image_filename}')
-
-
-
-# main()
+    return adaptive_lower, adaptive_upper

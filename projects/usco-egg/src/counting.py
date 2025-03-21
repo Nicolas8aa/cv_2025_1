@@ -1,5 +1,6 @@
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def analyze_egg_sizes(binary_mask):
@@ -20,8 +21,6 @@ def analyze_egg_sizes(binary_mask):
 
 
 
-import cv2
-import numpy as np
 
 def jaccard_index(mask1, mask2):
     """Compute Jaccard Index (IoU) between two binary masks."""
@@ -98,19 +97,31 @@ def count_eggs(binary_mask, threshold_area=1000):
     Basic egg counting algorithm based on objects presents from binary mask.
     
     - binary_mask: Binary image where eggs are white (255).
-    - fill_threshold: % of filled pixels required to consider as a candidate.
+    - threshold_area: Minimum area to consider as an egg.
 
     Returns:
     - egg_count: Number of detected eggs.
+    - markers: Binary mask with detected eggs.
     """
     contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     egg_count = 0
 
+    # Draw a rectangle around each egg
+
+    markers = np.zeros_like(binary_mask)
+
+
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        # print(f"Fill ratio: {area}")
 
         if area > threshold_area:
             egg_count += 1
+            cv2.drawContours(markers, [cnt], -1, 255, -1)
 
-    return egg_count
+            # Draw bounding box
+            x, y, w, h = cv2.boundingRect(cnt)
+            cv2.rectangle(markers, (x, y), (x + w, y + h
+            ), 255, 2)
+            
+
+    return egg_count, markers

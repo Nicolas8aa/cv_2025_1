@@ -1,19 +1,16 @@
 import cv2
 import numpy as np
-from utils import read_image, save_image
+from utils import read_image, save_image, resize_image
 
 # Load an image
-image = read_image("raw/0002.tif")
-lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
-hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+# image = read_image("raw/0002.tif")
+image = read_image("output/adjusted_image.jpg")
 
 # Resize to fit the screen (keeping aspect ratio)
-scale_percent = 50  # Reduce size to 50% of the original
-width = int(image.shape[1] * scale_percent / 100)
-height = int(image.shape[0] * scale_percent / 100)
-resized_image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
-resized_lab = cv2.resize(lab_image, (width, height), interpolation=cv2.INTER_AREA)
-resized_hsv = cv2.resize(hsv_image, (width, height), interpolation=cv2.INTER_AREA)
+scale_percent = 40  # Reduce size to 50% of the original
+resized_image = resize_image(image, scale_percent)
+resized_lab = resize_image(cv2.cvtColor(image, cv2.COLOR_BGR2LAB), scale_percent)
+resized_hsv = resize_image(cv2.cvtColor(image, cv2.COLOR_BGR2HSV), scale_percent)
 
 # Variables to store the starting and ending points of the circle
 start_point = None

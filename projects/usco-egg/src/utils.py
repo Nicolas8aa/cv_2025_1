@@ -1,7 +1,7 @@
 
 import os
 import cv2
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 
 dirname =  os.path.dirname(__file__)
@@ -62,14 +62,17 @@ def resize_image(image, scale_percent):
     """
     Resize the image to a given scale percentage while keeping the aspect ratio.
     
-    Parameters:
-    image (numpy.ndarray): The input image to resize.
-    scale_percent (float): The scale percentage to resize the image.
+      :parameters:
+      image (numpy.ndarray): The input image to resize.
+      scale_percent (float): The scale percentage to resize the image.
     
-    Returns:
-    numpy.ndarray: The resized image.
+      :returns:
+      numpy.ndarray: The resized image.
     """
     width = int(image.shape[1] * scale_percent / 100)
     height = int(image.shape[0] * scale_percent / 100)
     resized_image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
     return resized_image
+
+
+
