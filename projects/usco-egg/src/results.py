@@ -2,8 +2,8 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from utils import save_image
-
-
+import os
+from utils import data_dir
 
 def compute_confusion_matrix(predicted_count, real_count):
     """
@@ -54,22 +54,23 @@ def analyze_dataset(predictions, ground_truths):
 
     return total_cm, precision, recall, f1_score, accuracy
 
-def plot_confusion_matrix(cm):
+
+
+def save_confusion_matrix(cm, path, show=True):
     """
-    Plots the confusion matrix using Seaborn.
+    Saves the confusion matrix as an image.
     """
     labels = ["Correctly Counted (TP)", "Overcounted (FP)"]
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=labels, yticklabels=["Missed (FN)", "N/A"])
     plt.xlabel("Predicted Count")
     plt.ylabel("Actual Count")
     plt.title("Global Confusion Matrix for Dataset")
-    plt.savefig("confusion_matrix.png", dpi=300)
-    plt.show()
+    plt.savefig(path, dpi=300)
+    if show:
+      plt.show()
 
-    # Save the plot as an image
 
-
-def display_results(predictions, ground_truths):
+def display_results(predictions, ground_truths, color_space):
     """
     Displays the results of the egg counting system.
     
@@ -86,8 +87,12 @@ def display_results(predictions, ground_truths):
     print(f"F1 Score: {f1_score:.2f}")
     print(f"Accuracy: {accuracy:.2f}")
 
-    # Plot confusion matrix
-    plot_confusion_matrix(cm)
+    # Plot and save confusion matrix
+
+    path_to_save = os.path.join(data_dir, f"output/confusion_matrix_{color_space.lower()}.png")
+
+    save_confusion_matrix(cm, path_to_save)
+
 
 
 
