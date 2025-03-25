@@ -4,7 +4,7 @@ from segmentation import hsv_segmentation
 from utils import read_image, resize_image
 
 # Load the image
-image_original = read_image("raw/0009.tif", cv2.IMREAD_COLOR_RGB)
+image_original = read_image("raw/0019.tif", cv2.IMREAD_COLOR_RGB)
 
 
 image = resize_image(image_original, 40)
@@ -13,7 +13,15 @@ image = resize_image(image_original, 40)
 # Function to update segmentation
 # Add a button to save the current segmentation bounds into a list
 
+# Accumulate bounds
 bounds_list = []
+
+
+# Iterate over the bounds list and print as [(lower, upper), ...]
+def print_bounds():
+  for lower_bound, upper_bound in bounds_list:
+    print(f"({lower_bound}, {upper_bound}),")
+
 
 
 def update_segmentation(_=None):
@@ -25,20 +33,30 @@ def update_segmentation(_=None):
                             cv2.getTrackbarPos("S Max", "Segmentation"), 
                             cv2.getTrackbarPos("V Max", "Segmentation")], dtype=np.uint8)
 
-    if cv2.getTrackbarPos("Save", "Segmentation"):
-        bounds_list.append((lower_bound, upper_bound))
+    # Save bounds
+    if cv2.getTrackbarPos("Save", "Segmentation") == 1:
+        bounds_list.append((lower_bound.copy(), upper_bound.copy()))
+        # Clear the console
+        print("\033[H\033[J")
+        print_bounds()
         cv2.setTrackbarPos("Save", "Segmentation", 0)
-        print(f"Bounds saved: {bounds_list}")
 
 
     # Convert to HSV and apply segmentation
-    mask = hsv_segmentation(image, [(lower_bound, upper_bound)])
+
+    # Apply segmentation as a buffer
+
+    bounds_list_buffer = bounds_list.copy()
+    bounds_list_buffer.append((lower_bound, upper_bound))
+
+    mask = hsv_segmentation(image, bounds_list_buffer)
 
     # Show results
     cv2.imshow("Mask", mask)
 
 # Create a window
 cv2.namedWindow("Segmentation")
+
 
 # Create trackbars for HSV bounds
 cv2.createTrackbar("H Min", "Segmentation", 0, 180, update_segmentation)
@@ -48,6 +66,7 @@ cv2.createTrackbar("S Max", "Segmentation", 255, 255, update_segmentation)
 cv2.createTrackbar("V Min", "Segmentation", 0, 255, update_segmentation)
 cv2.createTrackbar("V Max", "Segmentation", 255, 255, update_segmentation)
 cv2.createTrackbar("Save", "Segmentation", 0, 1, update_segmentation)
+
 
 
 # Initial call to display segmentation

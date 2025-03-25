@@ -11,6 +11,7 @@ import numpy as np
 
 
 
+
 def display_results(image, binary_mask, egg_count):
   # Display results
   fig, ax = plt.subplots(1, 2, figsize=(10, 5))
@@ -46,7 +47,7 @@ def main_hsv(image, show_results=False):
 
   # Define HSV color bounds for segmentation
 
-  adaptive_lower, adaptive_upper = get_adaptive_thresholds(adjusted, [9, 106, 113], [13, 172, 255])
+  # adaptive_lower, adaptive_upper = get_adaptive_thresholds(adjusted, [9, 106, 113], [13, 172, 255])
 
   bounds_list = [
 
@@ -57,33 +58,38 @@ def main_hsv(image, show_results=False):
     # (adaptive_lower, adaptive_upper), # Normal eggs
 ]
   
+  # bounds_list = [ ([21, 102, 137], [ 24, 243, 255]),
+  #     ([ 12,  92, 146], [ 17, 222, 255]),
+  #     ([ 10,  83, 146], [ 23, 222, 255])
+  # ]
 
+  # ([ 9, 104, 137], [ 24, 255, 234]), General bounds (good for adaptive)
 
   # Apply segmentation
   binary_mask =  hsv_segmentation(adjusted, bounds_list)
 
 
   # Count eggs
-  egg_count, markers = count_eggs(binary_mask, threshold_area=4000) 
+  egg_count, markers = count_eggs(binary_mask, area_range=(4000, 55000))  # From 30000 to 52000
 
 
   # Save results
   if show_results:
     handle_results(adjusted, markers, egg_count)
 
-  return egg_count
+  return egg_count, markers
 
 
 
-IMAGE = read_image('raw/0009.tif', cv2.IMREAD_COLOR_RGB) # Read image in RGB format
+IMAGE = read_image('raw/0002.tif', cv2.IMREAD_COLOR_RGB) # Read image in RGB format
 REAL_COUNT = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 20, 20 , 20, 20, 20]	
 
 def main():
 
 
-  # count = main_hsv(IMAGE, show_results=True)
+  count = main_hsv(IMAGE, show_results=True)
 
-  # return
+  return
   
   # Read all images from the dataset (raw folder)
   raw_dir = os.path.join(data_dir, 'raw')
@@ -103,7 +109,10 @@ def main():
     image = read_image(f'raw/{image_file}', cv2.IMREAD_COLOR_RGB)
 
     # Count eggs
-    egg_count = main_hsv(image, show_results=False)
+    egg_count, markers = main_hsv(image, show_results=False)
+
+    # Save mask
+    save_image(markers, f"masks/{image_file}")
 
     # print(f"Predicted Count: {egg_count}")
 

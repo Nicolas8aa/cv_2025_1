@@ -92,7 +92,7 @@ def filter_eggs_by_similarity(binary_mask, reference_egg, rows=5, cols=6, margin
 
 
 
-def count_eggs(binary_mask, threshold_area=1000):
+def count_eggs(binary_mask, area_range=(1000, 100000)):
     """
     Basic egg counting algorithm based on objects presents from binary mask.
     
@@ -114,7 +114,7 @@ def count_eggs(binary_mask, threshold_area=1000):
     for cnt in contours:
         area = cv2.contourArea(cnt)
 
-        if area > threshold_area:
+        if area_range[0] <= area <= area_range[1]:
             egg_count += 1
             cv2.drawContours(markers, [cnt], -1, 255, -1)
 
@@ -122,6 +122,6 @@ def count_eggs(binary_mask, threshold_area=1000):
             x, y, w, h = cv2.boundingRect(cnt)
             cv2.rectangle(markers, (x, y), (x + w, y + h
             ), 255, 2)
-            
+
 
     return egg_count, markers
