@@ -1,25 +1,18 @@
-from utils import save_image, display_results
 from segmentation import hsv_segmentation
 from counting import  count_eggs
+from results import save_and_display_results
 
-
-
-
-
-def handle_results(image, binary_mask, egg_count):
-  # Save results
-  save_image(image, "output/adjusted_image.jpg")
-  save_image(binary_mask, "output/binary_mask.jpg")
-
-  # Display results
-  display_results(image, binary_mask, egg_count)
 
 
 def main_hsv(image, show_results=False):
+  """
+  Main function for egg counting using the HSV color space."
+    :param image: Input RGB image.
+    :return: Number of detected eggs and markers.
+  """
 
-#   Start timer
+  # Adjust image 
   adjusted = image
-  # adjusted = normalize_brightness(image)
 
 
   # Define HSV color bounds for segmentation
@@ -42,7 +35,7 @@ def main_hsv(image, show_results=False):
 
   # Save results
   if show_results:
-    handle_results(adjusted, markers, egg_count)
+    save_and_display_results(adjusted, markers, egg_count)
 
   return egg_count, markers
 

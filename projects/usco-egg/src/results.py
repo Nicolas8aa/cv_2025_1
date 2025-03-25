@@ -1,6 +1,7 @@
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+from utils import save_image
 
 
 
@@ -87,3 +88,24 @@ def display_results(predictions, ground_truths):
 
     # Plot confusion matrix
     plot_confusion_matrix(cm)
+
+
+
+def save_and_display_results(image, binary_mask, egg_count):
+    # Save results
+    save_image(image, "output/adjusted_image.jpg")
+    save_image(binary_mask, "output/binary_mask.jpg")
+
+    # Display results
+    fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+    ax[0].imshow(binary_mask, cmap="gray")
+    ax[0].set_title("Binary Mask (Thresholded)")
+    ax[0].axis("off")
+
+    ax[1].imshow(image)
+    ax[1].set_title(f"Detected Eggs: {egg_count}")
+    ax[1].axis("off")
+
+    plt.show()
+
+    print(f"Total Eggs Counted: {egg_count}")

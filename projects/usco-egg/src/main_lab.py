@@ -1,17 +1,7 @@
 
 from segmentation import lab_segmentation
 from counting import  count_eggs
-from preprocessing import normalize_egg_color_lab
-from utils import save_image, display_results
-
-
-def handle_results(image, binary_mask, egg_count):
-  # Save results
-  save_image(image, "output/adjusted_image.jpg")
-  save_image(binary_mask, "output/binary_mask.jpg")
-
-  # Display results
-  display_results(image, binary_mask, egg_count)
+from results import save_and_display_results
 
 
 def main_lab(image, show_results=False):
@@ -21,9 +11,7 @@ def main_lab(image, show_results=False):
     :return: Number of detected eggs.
   """
 
-
-  # Apply preprocessing (CLAHE and lighting adjustment)
-  # adjusted = normalize_egg_color_lab(image)
+  # Adjust image 
   adjusted = image
 
   
@@ -52,7 +40,7 @@ def main_lab(image, show_results=False):
   # Draw detected contours
 
   if show_results:
-    handle_results(adjusted, markers, egg_count)
+    save_and_display_results(adjusted, markers, egg_count)
 
   return egg_count, markers
 
