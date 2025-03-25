@@ -76,3 +76,17 @@ def resize_image(image, scale_percent):
 
 
 
+def display_results(image, binary_mask, egg_count):
+  # Display results
+  fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+  ax[0].imshow(binary_mask, cmap="gray")
+  ax[0].set_title("Binary Mask (Thresholded)")
+  ax[0].axis("off")
+
+  ax[1].imshow(image)
+  ax[1].set_title(f"Detected Eggs: {egg_count}")
+  ax[1].axis("off")
+
+  plt.show()
+
+  print(f"Total Eggs Counted: {egg_count}")

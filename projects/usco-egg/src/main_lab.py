@@ -1,10 +1,20 @@
 
-import cv2
 from segmentation import lab_segmentation
 from counting import  count_eggs
 from preprocessing import normalize_egg_color_lab
+from utils import save_image, display_results
 
-def main_lab(image):
+
+def handle_results(image, binary_mask, egg_count):
+  # Save results
+  save_image(image, "output/adjusted_image.jpg")
+  save_image(binary_mask, "output/binary_mask.jpg")
+
+  # Display results
+  display_results(image, binary_mask, egg_count)
+
+
+def main_lab(image, show_results=False):
   """
   Main function for egg counting using the LAB color space.
     :param image: Input RGB image.
@@ -13,7 +23,8 @@ def main_lab(image):
 
 
   # Apply preprocessing (CLAHE and lighting adjustment)
-  adjusted = normalize_egg_color_lab(image)
+  # adjusted = normalize_egg_color_lab(image)
+  adjusted = image
 
   
   # Define LAB color bounds for segmentation
@@ -24,7 +35,10 @@ def main_lab(image):
 
   bounds = [
     (lower_bound, upper_bound), # Normal eggs (working)
-    # ([96, 42, 129],[103, 42, 255])
+    # ([96, 42, 129],[103, 42, 255]),
+    # ([ 0 ,71 ,65], [255, 122, 120]),
+    # ([  0 ,118, 104], [255, 125, 113]),
+    # ([  0, 120 , 91], [255, 141, 105])
 
   ]
 
@@ -33,12 +47,12 @@ def main_lab(image):
 
 
   # Count eggs
-  egg_count = count_eggs(binary_mask, threshold_area=5000)
+  egg_count, markers = count_eggs(binary_mask, area_range=(10000, 55000))
 
   # Draw detected contours
 
-  # Save results
-  # handle_results(adjusted, binary_mask, egg_count)
+  if show_results:
+    handle_results(adjusted, markers, egg_count)
 
-  return egg_count
+  return egg_count, markers
 

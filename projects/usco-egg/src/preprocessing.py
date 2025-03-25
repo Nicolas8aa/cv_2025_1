@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from pathlib import Path
-from utils import read_image, save_image
 
 
 dirname =  os.path.dirname(__file__)
@@ -26,6 +25,19 @@ def apply_clahe_lab(image):
     img_corrected = cv2.cvtColor(lab_clahe, cv2.COLOR_LAB2RGB)
 
     return img_corrected
+
+
+
+def normalize_brightness(im_rgb):
+    im_hsv = cv2.cvtColor(im_rgb, cv2.COLOR_RGB2HSV)
+    V = im_hsv[:, :, 2]  # Extract V channel
+
+    # Apply CLAHE to V channel to normalize brightness
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    V_normalized = clahe.apply(V)
+
+    im_hsv[:, :, 2] = V_normalized  # Replace original V channel
+    return cv2.cvtColor(im_hsv, cv2.COLOR_HSV2RGB)  # Convert back to RGB
 
 
 def normalize_egg_color_hsv(image):
@@ -99,35 +111,3 @@ def show_histograms(image_data):
         plt.title(f"Histogram: {Path(path).name}")
     plt.show()
     
-
-def get_adaptive_thresholds(image, base_lower, base_upper, scale=1.5):
-    """
-    Adjusts HSV bounds dynamically based on lighting conditions.
-    
-    :param image: Input RGB image.
-    :param base_lower: Manually picked lower HSV bound.
-    :param base_upper: Manually picked upper HSV bound.
-    :param scale: Factor for standard deviation adjustment.
-    :return: Adaptive lower and upper HSV bounds.
-    """
-    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-    H, S, V = cv2.split(hsv)
-
-    # Compute mean and std deviation of the H & S channels
-    mean_H, std_H = np.mean(H), np.std(H)
-    mean_S, std_S = np.mean(S), np.std(S)
-
-    # Adjust base bounds using standard deviation
-    adaptive_lower = np.array([
-        max(0, base_lower[0] - scale * std_H), 
-        max(0, base_lower[1] - scale * std_S), 
-        base_lower[2]
-    ], dtype=np.uint8)
-
-    adaptive_upper = np.array([
-        min(180, base_upper[0] + scale * std_H), 
-        min(255, base_upper[1] + scale * std_S), 
-        base_upper[2]
-    ], dtype=np.uint8)
-
-    return adaptive_lower, adaptive_upper

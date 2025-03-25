@@ -1,4 +1,6 @@
 *.zip
 egg_panel_1
-*.tif
+# *.tif
+# !data/masks/hsv/*.tif
+# !data/masks/lab/*.tif
 __pycache__
