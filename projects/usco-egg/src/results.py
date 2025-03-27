@@ -68,6 +68,7 @@ def save_confusion_matrix(cm, path, show=True):
     plt.savefig(path, dpi=300)
     if show:
       plt.show()
+    plt.close()
 
 
 def display_results(predictions, ground_truths, color_space):

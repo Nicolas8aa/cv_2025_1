@@ -14,20 +14,15 @@ def main_lab(image, show_results=False):
   # Adjust image 
   adjusted = image
 
-  
+
   # Define LAB color bounds for segmentation
-  bounds = [140, 170]
-  L_bound = [66, 255]
-  lower_bound = [L_bound[0], bounds[0], bounds[0]]
-  upper_bound = [L_bound[1], bounds[1], bounds[1]]
+ 
+  lower_bound = [66, 140, 140]
+  upper_bound = [255, 170, 170]
 
   bounds = [
     (lower_bound, upper_bound), # Normal eggs (working)
-    # ([96, 42, 129],[103, 42, 255]),
-    # ([ 0 ,71 ,65], [255, 122, 120]),
-    # ([  0 ,118, 104], [255, 125, 113]),
-    # ([  0, 120 , 91], [255, 141, 105])
-
+    # ([ 68, 126, 131], [185, 141, 158])
   ]
 
   # Apply segmentation
@@ -42,5 +37,5 @@ def main_lab(image, show_results=False):
   if show_results:
     save_and_display_results(adjusted, markers, egg_count)
 
-  return egg_count, markers
+  return egg_count, markers, binary_mask
 

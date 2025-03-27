@@ -2,6 +2,7 @@
 import os
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 dirname =  os.path.dirname(__file__)
@@ -26,7 +27,9 @@ def display_image(image):
     plt.axis('off')
     plt.show()
 
-def plot_lab_histogram(image , a_range = [0, 256], b_range = [0, 256], l_range = [0, 256], suffix = ""):
+
+
+def plot_lab_histogram(image , a_range = [0, 256], b_range = [0, 256], l_range = [0, 256], title="LAB Histogram", path = None, bins = 256):
     """
     Plots the histogram of L, A, B channels to analyze color distribution.
     """
@@ -36,6 +39,7 @@ def plot_lab_histogram(image , a_range = [0, 256], b_range = [0, 256], l_range =
 
     # Plot histograms
     plt.figure(figsize=(12, 4))
+    plt.suptitle(title)
 
     plt.subplot(1, 3, 1)
     plt.hist(L.ravel(), bins=256, range=[0, 256], color='black')
@@ -56,7 +60,9 @@ def plot_lab_histogram(image , a_range = [0, 256], b_range = [0, 256], l_range =
     # plt.show()
 
     # Save histograms
-    plt.savefig(f"lab_histogram_{suffix}.png", dpi=300)
+    plt.savefig(path, dpi=300)
+    plt.close()
+
 
 def resize_image(image, scale_percent):
     """
