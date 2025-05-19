@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-def plot_gaussian_models(means, std_devs, weights=None, x_range=(0, 255), num_points=1000):
+def plot_gaussian_models(means, std_devs, weights=None, x_range=(0, 255), num_points=1000, save_path=None):
     x = np.linspace(x_range[0], x_range[1], num_points)
     total_pdf = np.zeros_like(x)
 
@@ -23,4 +23,9 @@ def plot_gaussian_models(means, std_devs, weights=None, x_range=(0, 255), num_po
     plt.xlabel('Intensity')
     plt.ylabel('Probability Density')
     plt.title('Gaussian Models')
-    plt.show()
+    if save_path:
+        plt.savefig(save_path)
+    else:
+      plt.show()
+
+    plt.close()
