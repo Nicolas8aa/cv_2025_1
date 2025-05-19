@@ -4,3 +4,5 @@ venv
 
 # Allow the following pdf files
 !proyecto*.pdf
+
+__pycache__
